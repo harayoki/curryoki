@@ -55,7 +55,21 @@ for md_file in md_files:
     content = convert_media_paths(content)
     
     lines = content.split("\n")
-    title = next((line.strip("# ") for line in lines if line.startswith("# ")), os.path.basename(md_file))
+
+    # 空白行をスキップし、最初の `# ` で始まる行を探す
+    title_line = next((line for line in lines if line.strip() and line.startswith("# ")), None)
+
+    # タイトルが見つかった場合のみ削除
+    if title_line:
+        title = title_line.strip("# ").strip()
+        filtered_lines = [line for line in lines if line != title_line]
+    else:
+        title = os.path.basename(md_file)  # ファイル名をタイトルにする
+        filtered_lines = lines  # 本文は変更しない
+
+    # 投稿用の本文
+    content_cleaned = "\n".join(filtered_lines)
+
 
     post_url = published.get(md_file, None)
     method = "PUT" if post_url else "POST"
@@ -66,7 +80,7 @@ for md_file in md_files:
 
     entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
     SubElement(entry, "title").text = title
-    SubElement(entry, "content", {"type": "text/markdown"}).text = content
+    SubElement(entry, "content", {"type": "text/markdown"}).text = content_cleaned
     SubElement(entry, "category", term=category)
     SubElement(entry, "published").text = published_time
     SubElement(entry, "updated").text = now_iso
