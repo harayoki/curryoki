@@ -72,17 +72,18 @@ for md_file in md_files:
 
     headers = {
         "Content-Type": "application/xml",
-        "X-WSSE": wsse(HATENA_ID, HATENA_API_KEY)}
+        # "X-WSSE": wsse(HATENA_ID, HATENA_API_KEY)
+    }
 
     url = post_url if post_url else HATENA_BLOG_URL
 
     r = requests.post(url, auth=(HATENA_ID, HATENA_API_KEY), data="")
-   
+    print(r.status_code, r.text)
 
     response = requests.request(
         method,
         url,
-        # auth=HTTPBasicAuth(HATENA_ID, HATENA_API_KEY),
+        auth=HTTPBasicAuth(HATENA_ID, HATENA_API_KEY),
         headers=headers,
         data=tostring(entry)
     )
