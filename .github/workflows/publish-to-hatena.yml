@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: リポジトリを取得
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Python 環境をセットアップ
         uses: actions/setup-python@v3
@@ -22,9 +24,20 @@ jobs:
       - name: 必要なライブラリをインストール
         run: pip install requests
 
-      - name: はてなブログの同期処理
+      - name: はてなブログへ Markdown 記事を同期
         run: python .github/scripts/sync_md.py
         env:
-          HATENA_ID: ${{ secrets.HATENA_ID }}
+          HATENA_BLOG_ID: ${{ secrets.HATENA_BLOG_ID }}
           HATENA_API_KEY: ${{ secrets.HATENA_API_KEY }}
-          GITHUB_PAGES_URL: "https://yourusername.github.io/hatena-blog-sync/images"
+          IMAGE_BASE_URL: "https://raw.githubusercontent.com/harayoki/curryoki/refs/heads/main/images"
+
+      - name: コミット & プッシュ `published.json`
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add metadata/published.json
+          git commit -m "Update published.json [CI]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

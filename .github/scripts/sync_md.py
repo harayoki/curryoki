@@ -6,24 +6,23 @@ from requests.auth import HTTPBasicAuth
 import re
 from datetime import datetime, timezone
 from xml.etree.ElementTree import Element, SubElement, tostring
-import random
-import hashlib
-import base64
 
-
-def wsse(username, api_key):
-    created = datetime.now().isoformat() + "Z"
-    b_nonce = hashlib.sha1(str(random.random()).encode()).digest()
-    b_digest = hashlib.sha1(b_nonce + created.encode() + api_key.encode()).digest()
-    c = 'UsernameToken Username="{0}", PasswordDigest="{1}", Nonce="{2}", Created="{3}"'
-    return c.format(username, base64.b64encode(b_digest).decode(), base64.b64encode(b_nonce).decode(), created)
-
+# import random
+# import hashlib
+# import base64
+# def wsse(username, api_key):
+#     created = datetime.now().isoformat() + "Z"
+#     b_nonce = hashlib.sha1(str(random.random()).encode()).digest()
+#     b_digest = hashlib.sha1(b_nonce + created.encode() + api_key.encode()).digest()
+#     c = 'UsernameToken Username="{0}", PasswordDigest="{1}", Nonce="{2}", Created="{3}"'
+#     return c.format(username, base64.b64encode(b_digest).decode(), base64.b64encode(b_nonce).decode(), created)
 
 # はてなブログのAPI設定
 HATENA_ID = os.getenv("HATENA_ID")  
 HATENA_BLOG_ID = "curryoki.hatenablog.jp"
 HATENA_API_KEY = os.getenv("HATENA_API_KEY")
-GITHUB_PAGES_URL = os.getenv("GITHUB_PAGES_URL")
+IMAGE_BASE_URL = os.getenv("IMAGE_BASE_URL")
+assert HATENA_ID and HATENA_API_KEY and IMAGE_BASE_URL, "Please set HATENA_ID, HATENA_API_KEY, IMAGE_BASE_URL environment variables"
 
 HATENA_BLOG_URL = f"https://blog.hatena.ne.jp/{HATENA_ID}/{HATENA_BLOG_ID}/atom/entry"
 
@@ -37,13 +36,19 @@ try:
 except FileNotFoundError:
     published = {}
 
+def convert_media_paths(content):
+    """Markdown の相対パスのメディア（画像・動画・ファイル）を GitHub BLOB URL に変換"""
+    # 正規表現の修正版
+    return re.sub(
+        r"!\[(.*?)\]\((?!https?:\/\/)([^)\s]+?\.(jpg|jpeg|png|gif|webp|svg|zip|mp4|mp3|blend|psd|ai)(\?.*?)?)\)",
+        lambda m: f"![{m.group(1)}]({IMAGE_BASE_URL}/{m.group(2)})",
+        content
+    )
+
+
 # 記事の一覧を取得
 md_files = glob.glob("articles/**/*.md", recursive=True)
 draft_files = glob.glob("_drafts/**/*.md", recursive=True)
-
-def convert_image_paths(content):
-    """相対パスをGitHub PagesのURLに変換"""
-    return re.sub(r"!\[(.*?)\]\((.*?)\)", lambda m: f"![{m.group(1)}]({GITHUB_PAGES_URL}/{m.group(2)})", content)
 
 # **新規 or 更新の処理**
 for md_file in md_files:
@@ -51,7 +56,7 @@ for md_file in md_files:
     with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
 
-    content = convert_image_paths(content)
+    content = convert_media_paths(content)
     
     lines = content.split("\n")
     title = next((line.strip("# ") for line in lines if line.startswith("# ")), os.path.basename(md_file))
@@ -76,10 +81,6 @@ for md_file in md_files:
     }
 
     url = post_url if post_url else HATENA_BLOG_URL
-
-    r = requests.post(url, auth=(HATENA_ID, HATENA_API_KEY), data="")
-    print(r.status_code, r.text)
-
     response = requests.request(
         method,
         url,
