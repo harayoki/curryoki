@@ -6,6 +6,8 @@ from requests.auth import HTTPBasicAuth
 import re
 from datetime import datetime, timezone
 from xml.etree.ElementTree import Element, SubElement, tostring
+import xml.etree.ElementTree as ET
+
 
 # import random
 # import hashlib
@@ -98,16 +100,16 @@ for md_file in md_files:
         post_url = response.headers.get("Location")
         print(f"post_url: {post_url}")
         if not post_url:
+            # 更新時は Location が戻ってこない模様
             try:
-                print(response.content)
                 root = ET.fromstring(response.content)
-                post_url = root.find(".//{http://www.w3.org/2005/Atom}link[@rel='alternate']").attrib["href"]
-                print(f"    -> {post_url}")
+                post_url = root.find(".//{http://www.w3.org/2005/Atom}link[@rel='edit']").attrib["href"]
             except Exception:
-                post_url = "unknown"
-                print(f"    -> {post_url}")
-
-        published[md_file] = post_url
+                print(f"⚠️ {md_file}: 投稿URLを取得できませんでしたが、unknown は入れません。")
+                continue  # `published.json` を更新せずスキップ 
+        if post_url:
+            print(f"post_url: {post_url}")
+            published[md_file] = post_url
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")
