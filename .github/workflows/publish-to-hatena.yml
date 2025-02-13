@@ -38,11 +38,12 @@ jobs:
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
-      - name: コミット & プッシュ `published.json`
+      - name: コミット & プッシュ `published.json / missing.json`
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add metadata/published.json
+          git add metadata/missing.json
           git commit -m "Update published.json [CI]" || echo "No changes to commit"
           git push
         env:

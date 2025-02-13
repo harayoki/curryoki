@@ -9,17 +9,6 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 import xml.etree.ElementTree as ET
 
 
-# import random
-# import hashlib
-# import base64
-# def wsse(username, api_key):
-#     created = datetime.now().isoformat() + "Z"
-#     b_nonce = hashlib.sha1(str(random.random()).encode()).digest()
-#     b_digest = hashlib.sha1(b_nonce + created.encode() + api_key.encode()).digest()
-#     c = 'UsernameToken Username="{0}", PasswordDigest="{1}", Nonce="{2}", Created="{3}"'
-#     return c.format(username, base64.b64encode(b_digest).decode(), base64.b64encode(b_nonce).decode(), created)
-
-# はてなブログのAPI設定
 HATENA_ID = os.getenv("HATENA_ID")  
 HATENA_BLOG_ID = "curryoki.hatenablog.jp"
 HATENA_API_KEY = os.getenv("HATENA_API_KEY")
@@ -34,11 +23,15 @@ print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
 
 
 PUBLISHED_FILE = "metadata/published.json"
+MISSING_FILE = "metadata/missing.json"
+
 try:
     with open(PUBLISHED_FILE, "r") as f:
         published = json.load(f)
 except FileNotFoundError:
     published = {}
+
+
 
 def convert_media_paths(content):
     """Markdown の相対パスのメディア（画像・動画・ファイル）を GitHub BLOB URL に変換"""
@@ -52,12 +45,10 @@ def convert_media_paths(content):
 
 # 記事の一覧を取得
 md_files = glob.glob("articles/**/*.md", recursive=True)
-draft_files = glob.glob("_drafts/**/*.md", recursive=True)
 
 # **新規 or 更新の処理**
 for md_file in md_files:
     category = md_file.split("/")[1]  
-    md_file_name = os.path.basename(md_file)
     with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
 
@@ -66,12 +57,12 @@ for md_file in md_files:
     lines = content.split("\n")
     title = next((line.strip("# ") for line in lines if line.startswith("# ")), os.path.basename(md_file))
 
-    post_url = published.get(md_file_name, None)
+    post_url = published.get(md_file, None)
     method = "PUT" if post_url else "POST"
 
     now_iso = datetime.now(timezone.utc).isoformat()
 
-    published_time = published.get(md_file_name, now_iso)
+    published_time = published.get(md_file, now_iso)
 
     entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
     SubElement(entry, "title").text = title
@@ -109,48 +100,28 @@ for md_file in md_files:
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
             print(f"post_url: {post_url}")
-            published[md_file_name] = post_url
+            published[md_filee] = post_url
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")
-
 
 with open(PUBLISHED_FILE, "w") as f:
     json.dump(published, f, indent=2)
 
 
-# **公開済み記事を「下書き」に戻す**  
-for draft_file in draft_files:
-    draft_file_name = os.path.basename(draft_file)
-    if draft_file_name in published:
-        print(f"Marking {draft_file_name} as draft")
+missing = {}
+# published にあるがローカルに見つからないファイルを一覧にしておく
+for f, url in published.items():
+    if not os.path.exists(f):
+        missing[f] = url
 
-        with open(draft_file, "r", encoding="utf-8") as f:
-            content = f.read()
-        lines = content.split("\n")
-        title = next((line.strip("# ") for line in lines if line.startswith("# ")), os.path.basename(draft_file))
+try:
+    with open(MISSING_FILE, "w") as f:
+        json.dump(missing, f, indent=2)
+except Exception as e:
+    print(f"Failed to write {MISSING_FILE}: {e}")
+# この一覧にあるものはぶりぐ側で手作業で消したほうがいいかもしれない。
 
-        post_url = published[draft_file_name]
-
-        # **下書きとして非公開にするため、URLを変更**
-        draft_entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
-        SubElement(draft_entry, "title").text = f"[DRAFT] {title}"
-        now_iso = datetime.now(timezone.utc).isoformat()
-        SubElement(draft_entry, "updated").text = now_iso
-        draft_headers = {"Content-Type": "application/xml"}
-
-        # **公開URLを「/draft/」に変更**
-        response = requests.put(
-            post_url.replace("/entry/", "/draft/"),
-            auth=(HATENA_ID, HATENA_API_KEY),
-            headers=draft_headers,
-            data=tostring(draft_entry)
-        )
-
-        if response.status_code == 200:
-            print(f"Marked {draft_file} as draft")
-        else:
-            print(f"Failed to mark as draft: {response.text}")
 
 
 """
