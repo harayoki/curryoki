@@ -7,15 +7,14 @@ from datetime import datetime, timezone
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 # はてなブログのAPI設定
-HATENA_ID = os.getenv("HATENA_BLOG_ID")  
-HATENA_BLOG_ID = "curryoki"
+HATENA_ID = os.getenv("HATENA_ID")  
+HATENA_BLOG_ID = "curryoki.hatenablog.jp"
 HATENA_API_KEY = os.getenv("HATENA_API_KEY")
 GITHUB_PAGES_URL = os.getenv("GITHUB_PAGES_URL")
 
 HATENA_BLOG_URL = f"https://blog.hatena.ne.jp/{HATENA_ID}/{HATENA_BLOG_ID}/atom/entry"
 
 print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
-print(f"HATENA_BLOG_URL: https://blog.hatena.ne.jp/curryoki/curryoki/atom/entry")
 
 
 PUBLISHED_FILE = "metadata/published.json"
@@ -30,7 +29,7 @@ md_files = glob.glob("articles/**/*.md", recursive=True)
 draft_files = glob.glob("_drafts/**/*.md", recursive=True)
 
 def convert_image_paths(content):
-    """相対パスの画像をGitHub PagesのURLに変換"""
+    """相対パスをGitHub PagesのURLに変換"""
     return re.sub(r"!\[(.*?)\]\((.*?)\)", lambda m: f"![{m.group(1)}]({GITHUB_PAGES_URL}/{m.group(2)})", content)
 
 # **新規 or 更新の処理**
@@ -61,10 +60,7 @@ for md_file in md_files:
 
     headers = {"Content-Type": "application/xml"}
     url = post_url if post_url else HATENA_BLOG_URL
-
-    r = requests.get(url, auth=(HATENA_ID, HATENA_API_KEY))
-    print(f"r.status_code: {r.status_code} r.text: {r.text}")
-
+    
     response = requests.request(
         method,
         url,
@@ -105,3 +101,7 @@ for draft_file in draft_files:
             print(f"Marked {draft_file} as draft")
         else:
             print(f"Failed to mark as draft: {response.text}")
+
+
+
+# curl -u "curryoki:*****" https://blog.hatena.ne.jp/curryoki/curryoki.hatenablog.jp/atom/entry
