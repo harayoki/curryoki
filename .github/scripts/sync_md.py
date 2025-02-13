@@ -93,9 +93,18 @@ for md_file in md_files:
 
     if response.status_code in [200, 201]:
         print(f"Published {md_file} -> {title}")
-        published[md_file] = response.headers.get("Location", "unknown")
-        with open(PUBLISHED_FILE, "w") as f:
-            json.dump(published, f, indent=2)
+
+        # 投稿 URL を取得（Location ヘッダ or XML）
+        post_url = response.headers.get("Location")
+        if not post_url:
+            try:
+                root = ET.fromstring(response.content)
+                post_url = root.find(".//{http://www.w3.org/2005/Atom}link[@rel='alternate']").attrib["href"]
+            except Exception:
+                post_url = "unknown"
+
+        published[md_file] = post_url
+
     else:
         print(f"Failed to publish {md_file}: {response.text}")
 
