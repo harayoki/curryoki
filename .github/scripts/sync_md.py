@@ -118,8 +118,9 @@ with open(PUBLISHED_FILE, "w") as f:
     json.dump(published, f, indent=2)
 
 
-# **公開済み記事を「下書き」に戻す**
+# **公開済み記事を「下書き」に戻す**  
 for draft_file in draft_files:
+    print(f"Checking {draft_file}")
     if draft_file in published:
         print(f"Marking {draft_file} as draft")
         post_url = published[draft_file]
@@ -144,5 +145,13 @@ for draft_file in draft_files:
             print(f"Failed to mark as draft: {response.text}")
 
 
+"""
+MEMO
 
+仕様：githubリポジトリはpublicであることを前提としている,privateの場合メディアのURLが正しく機能しない
+仕様：ローカルの記事ファイルを消した場合でもpublished.json に記録が残るが対応していない、そのままサイトの記事にも残る
+"""
+
+
+# test用
 # curl -u "curryoki:*****" https://blog.hatena.ne.jp/curryoki/curryoki.hatenablog.jp/atom/entry
