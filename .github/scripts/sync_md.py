@@ -12,7 +12,7 @@ import base64
 
 
 def wsse(username, api_key):
-    created = datetime.datetime.now().isoformat() + "Z"
+    created = datetime.now().isoformat() + "Z"
     b_nonce = hashlib.sha1(str(random.random()).encode()).digest()
     b_digest = hashlib.sha1(b_nonce + created.encode() + api_key.encode()).digest()
     c = 'UsernameToken Username="{0}", PasswordDigest="{1}", Nonce="{2}", Created="{3}"'
