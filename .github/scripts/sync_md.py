@@ -106,13 +106,15 @@ for md_file in md_files:
                 post_url = "unknown"
                 print(f"    -> {post_url}")
 
-        with open(PUBLISHED_FILE, "w") as f:
-            json.dump(published, f, indent=2)
-
         published[md_file] = post_url
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")
+
+
+with open(PUBLISHED_FILE, "w") as f:
+    json.dump(published, f, indent=2)
+
 
 # **公開済み記事を「下書き」に戻す**
 for draft_file in draft_files:

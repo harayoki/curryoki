@@ -2,7 +2,7 @@
 
 🐈 test 🐈
 
-
+HAPPY CURRY DAYS!
 HAPPY CURRY DAYS!
 
 ![](/images/curry_everyday_wide1.png)
