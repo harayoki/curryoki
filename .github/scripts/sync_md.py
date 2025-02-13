@@ -13,6 +13,8 @@ HATENA_API_KEY = os.getenv("HATENA_API_KEY")
 GITHUB_PAGES_URL = os.getenv("GITHUB_PAGES_URL")
 
 HATENA_BLOG_URL = f"https://blog.hatena.ne.jp/{HATENA_ID}/{HATENA_BLOG_ID}/atom/entry"
+print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
+
 
 PUBLISHED_FILE = "metadata/published.json"
 try:
