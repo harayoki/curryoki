@@ -149,6 +149,7 @@ for draft_file in draft_files:
 MEMO
 
 仕様：githubリポジトリはpublicであることを前提としている,privateの場合メディアのURLが正しく機能しない
+仕様：ブログ側で記事を消すとpublished.json に記録が残るが対応していない、そのままサイトの記事にも残る
 仕様：ローカルの記事ファイルを消した場合でもpublished.json に記録が残るが対応していない、そのままサイトの記事にも残る
 """
 
