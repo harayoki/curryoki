@@ -2,6 +2,7 @@ import os
 import json
 import glob
 import requests
+from requests.auth import HTTPBasicAuth
 import re
 from datetime import datetime, timezone
 from xml.etree.ElementTree import Element, SubElement, tostring
@@ -11,8 +12,6 @@ HATENA_ID = os.getenv("HATENA_ID")
 HATENA_BLOG_ID = "curryoki.hatenablog.jp"
 HATENA_API_KEY = os.getenv("HATENA_API_KEY")
 GITHUB_PAGES_URL = os.getenv("GITHUB_PAGES_URL")
-
-print(f"len HATENA_API_KEY : {len(HATENA_API_KEY)}")
 
 HATENA_BLOG_URL = f"https://blog.hatena.ne.jp/{HATENA_ID}/{HATENA_BLOG_ID}/atom/entry"
 
@@ -46,7 +45,6 @@ for md_file in md_files:
     title = next((line.strip("# ") for line in lines if line.startswith("# ")), os.path.basename(md_file))
 
     post_url = published.get(md_file, None)
-    print("post_url: ", post_url)
     method = "PUT" if post_url else "POST"
 
     now_iso = datetime.now(timezone.utc).isoformat()
@@ -66,7 +64,7 @@ for md_file in md_files:
     response = requests.request(
         method,
         url,
-        auth=(HATENA_ID, HATENA_API_KEY),
+        auth=HTTPBasicAuth(HATENA_ID, HATENA_API_KEY),
         headers=headers,
         data=tostring(entry)
     )
