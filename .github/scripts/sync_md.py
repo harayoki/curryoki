@@ -100,7 +100,7 @@ for md_file in md_files:
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
             print(f"post_url: {post_url}")
-            published[md_filee] = post_url
+            published[md_file] = post_url
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")

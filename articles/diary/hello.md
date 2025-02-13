@@ -32,4 +32,5 @@
 
 
 ![kitchen](/images/kitchen.jpg)
-Image by DALL-E
+Image by DALL-E (CHAT GPT)
+
