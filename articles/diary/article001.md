@@ -5,4 +5,4 @@ test test 🐈
 
 HAPPY CURRY DAYS!
 
-![](/images/curry_everyday_wide.png)
+![](/images/curry_everyday_wide1.png)
