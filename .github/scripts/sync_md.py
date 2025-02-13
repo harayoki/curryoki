@@ -61,6 +61,10 @@ for md_file in md_files:
 
     headers = {"Content-Type": "application/xml"}
     url = post_url if post_url else HATENA_BLOG_URL
+
+    r = requests.get(url, auth=(HATENA_ID, HATENA_API_KEY))
+    print(f"r.status_code: {r.status_code} r.text: {r.text}")
+
     response = requests.request(
         method,
         url,
