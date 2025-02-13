@@ -57,6 +57,7 @@ draft_files = glob.glob("_drafts/**/*.md", recursive=True)
 # **新規 or 更新の処理**
 for md_file in md_files:
     category = md_file.split("/")[1]  
+    md_file_name = os.path.basename(md_file)
     with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
 
@@ -65,12 +66,12 @@ for md_file in md_files:
     lines = content.split("\n")
     title = next((line.strip("# ") for line in lines if line.startswith("# ")), os.path.basename(md_file))
 
-    post_url = published.get(md_file, None)
+    post_url = published.get(md_file_name, None)
     method = "PUT" if post_url else "POST"
 
     now_iso = datetime.now(timezone.utc).isoformat()
 
-    published_time = published.get(md_file, now_iso)
+    published_time = published.get(md_file_name, now_iso)
 
     entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
     SubElement(entry, "title").text = title
@@ -108,7 +109,7 @@ for md_file in md_files:
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
             print(f"post_url: {post_url}")
-            published[md_file] = post_url
+            published[md_file_name] = post_url
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")
@@ -120,10 +121,10 @@ with open(PUBLISHED_FILE, "w") as f:
 
 # **公開済み記事を「下書き」に戻す**  
 for draft_file in draft_files:
-    print(f"Checking {draft_file}")
-    if draft_file in published:
-        print(f"Marking {draft_file} as draft")
-        post_url = published[draft_file]
+    draft_file_name = os.path.basename(draft_file)
+    if draft_file_name in published:
+        print(f"Marking {draft_file_name} as draft")
+        post_url = published[draft_file_name]
 
         # **下書きとして非公開にするため、URLを変更**
         draft_entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")

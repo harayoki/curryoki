@@ -6,4 +6,3 @@
 
 
 ![P](https://cdn.profile-image.st-hatena.com/users/curryoki/profile.png)
-
