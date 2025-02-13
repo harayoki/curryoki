@@ -1,4 +1,4 @@
-# HAPPY CURRY DAYS!
+# HAPPY!
 
 🐈 HAPPY CURRY DAYS!!! 🐈
 

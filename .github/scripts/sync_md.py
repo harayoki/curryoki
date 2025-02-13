@@ -94,18 +94,17 @@ for md_file in md_files:
     )
 
     if response.status_code in [200, 201]:
-        print(f"Published {md_file} -> {title}")
+        print(f"Published {md_file}: {title}")
 
         # 投稿 URL を取得（Location ヘッダ or XML）
         post_url = response.headers.get("Location")
-        print(f"post_url: {post_url}")
         if not post_url:
             # 更新時は Location が戻ってこない模様
             try:
                 root = ET.fromstring(response.content)
                 post_url = root.find(".//{http://www.w3.org/2005/Atom}link[@rel='edit']").attrib["href"]
             except Exception:
-                print(f"⚠️ {md_file}: 投稿URLを取得できませんでしたが、unknown は入れません。")
+                print(f"⚠️ {md_file}: 投稿URLを取得できませんでした。")
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
             print(f"post_url: {post_url}")
