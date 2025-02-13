@@ -96,12 +96,15 @@ for md_file in md_files:
 
         # 投稿 URL を取得（Location ヘッダ or XML）
         post_url = response.headers.get("Location")
+        print(f"post_url: {post_url}")
         if not post_url:
             try:
                 root = ET.fromstring(response.content)
                 post_url = root.find(".//{http://www.w3.org/2005/Atom}link[@rel='alternate']").attrib["href"]
+                print(f"    -> {post_url}")
             except Exception:
                 post_url = "unknown"
+                print(f"    -> {post_url}")
 
         published[md_file] = post_url
 
