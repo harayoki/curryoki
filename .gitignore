@@ -1,1 +1,8 @@
 draft
+.github/secrets/
+.github/workflows/*.log
+.github/cache/
+.github/tmp/
+tmp/
+~*
+

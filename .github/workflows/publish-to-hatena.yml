@@ -1,0 +1,30 @@
+name: Sync Markdown to Hatena Blog
+
+on:
+  push:
+    paths:
+      - "articles/**/*.md"
+      - "_drafts/**/*.md"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリを取得
+        uses: actions/checkout@v3
+
+      - name: Python 環境をセットアップ
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.x"
+
+      - name: 必要なライブラリをインストール
+        run: pip install requests
+
+      - name: はてなブログの同期処理
+        run: python .github/scripts/sync_md.py
+        env:
+          HATENA_BLOG_ID: ${{ secrets.HATENA_BLOG_ID }}
+          HATENA_API_KEY: ${{ secrets.HATENA_API_KEY }}
+          GITHUB_PAGES_URL: "https://yourusername.github.io/hatena-blog-sync/images"
