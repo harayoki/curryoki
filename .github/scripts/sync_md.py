@@ -124,6 +124,12 @@ for draft_file in draft_files:
     draft_file_name = os.path.basename(draft_file)
     if draft_file_name in published:
         print(f"Marking {draft_file_name} as draft")
+
+        with open(draft_file, "r", encoding="utf-8") as f:
+            content = f.read()
+        lines = content.split("\n")
+        title = next((line.strip("# ") for line in lines if line.startswith("# ")), os.path.basename(draft_file))
+
         post_url = published[draft_file_name]
 
         # **下書きとして非公開にするため、URLを変更**
@@ -152,6 +158,7 @@ MEMO
 仕様：githubリポジトリはpublicであることを前提としている,privateの場合メディアのURLが正しく機能しない
 仕様：ブログ側で記事を消すとpublished.json に記録が残るが対応していない、そのままサイトの記事にも残る
 仕様：ローカルの記事ファイルを消した場合でもpublished.json に記録が残るが対応していない、そのままサイトの記事にも残る
+仕様：違うカテゴリ内で別のカテゴリと同じ名前のmdファイルを置くと管理がおかしくなる
 """
 
 
