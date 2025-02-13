@@ -13,7 +13,9 @@ HATENA_API_KEY = os.getenv("HATENA_API_KEY")
 GITHUB_PAGES_URL = os.getenv("GITHUB_PAGES_URL")
 
 HATENA_BLOG_URL = f"https://blog.hatena.ne.jp/{HATENA_ID}/{HATENA_BLOG_ID}/atom/entry"
+
 print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
+print(f"HATENA_BLOG_URL: https://blog.hatena.ne.jp/curryoki/curryoki/atom/entry")
 
 
 PUBLISHED_FILE = "metadata/published.json"
@@ -43,6 +45,7 @@ for md_file in md_files:
     title = next((line.strip("# ") for line in lines if line.startswith("# ")), os.path.basename(md_file))
 
     post_url = published.get(md_file, None)
+    print("post_url: ", post_url)
     method = "PUT" if post_url else "POST"
 
     now_iso = datetime.now(timezone.utc).isoformat()
