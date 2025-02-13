@@ -27,7 +27,7 @@ jobs:
       - name: はてなブログへ Markdown 記事を同期
         run: python .github/scripts/sync_md.py
         env:
-          HATENA_BLOG_ID: ${{ secrets.HATENA_BLOG_ID }}
+          HATENA_BLOG_ID: ${{ secrets.HATENA_ID }}
           HATENA_API_KEY: ${{ secrets.HATENA_API_KEY }}
           IMAGE_BASE_URL: "https://raw.githubusercontent.com/harayoki/curryoki/refs/heads/main/images"
 

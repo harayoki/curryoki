@@ -22,7 +22,9 @@ HATENA_ID = os.getenv("HATENA_ID")
 HATENA_BLOG_ID = "curryoki.hatenablog.jp"
 HATENA_API_KEY = os.getenv("HATENA_API_KEY")
 IMAGE_BASE_URL = os.getenv("IMAGE_BASE_URL")
-assert HATENA_ID and HATENA_API_KEY and IMAGE_BASE_URL, "Please set HATENA_ID, HATENA_API_KEY, IMAGE_BASE_URL environment variables"
+assert HATENA_ID, "Please set HATENA_ID environment variables"
+assert HATENA_API_KEY, "Please set HATENA_API_KEY environment variables"
+assert IMAGE_BASE_URL, "Please set IMAGE_BASE_URL environment variables"
 
 HATENA_BLOG_URL = f"https://blog.hatena.ne.jp/{HATENA_ID}/{HATENA_BLOG_ID}/atom/entry"
 
