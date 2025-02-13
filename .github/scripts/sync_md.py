@@ -76,6 +76,9 @@ for md_file in md_files:
 
     url = post_url if post_url else HATENA_BLOG_URL
 
+    r = requests.post(url, auth=(HATENA_ID, HATENA_API_KEY), data="")
+   
+
     response = requests.request(
         method,
         url,
