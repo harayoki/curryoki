@@ -25,6 +25,6 @@ jobs:
       - name: はてなブログの同期処理
         run: python .github/scripts/sync_md.py
         env:
-          HATENA_BLOG_ID: ${{ secrets.HATENA_BLOG_ID }}
+          HATENA_ID: ${{ secrets.HATENA_ID }}
           HATENA_API_KEY: ${{ secrets.HATENA_API_KEY }}
           GITHUB_PAGES_URL: "https://yourusername.github.io/hatena-blog-sync/images"
