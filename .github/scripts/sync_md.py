@@ -135,6 +135,7 @@ for draft_file in draft_files:
         # **下書きとして非公開にするため、URLを変更**
         draft_entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
         SubElement(draft_entry, "title").text = f"[DRAFT] {title}"
+        now_iso = datetime.now(timezone.utc).isoformat()
         SubElement(draft_entry, "updated").text = now_iso
         draft_headers = {"Content-Type": "application/xml"}
 
