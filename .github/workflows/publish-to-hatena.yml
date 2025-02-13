@@ -7,6 +7,9 @@ on:
       - "_drafts/**/*.md"
   workflow_dispatch:
 
+permissions:
+  contents: write  # GITHUB_TOKEN に書き込み権限を付与
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -31,6 +34,10 @@ jobs:
           HATENA_API_KEY: ${{ secrets.HATENA_API_KEY }}
           IMAGE_BASE_URL: "https://raw.githubusercontent.com/harayoki/curryoki/refs/heads/main/images"
 
+      - name: Git リモート URL を設定
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
       - name: コミット & プッシュ `published.json`
         run: |
           git config --global user.name "github-actions[bot]"
@@ -40,4 +47,3 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
