@@ -99,6 +99,7 @@ for md_file in md_files:
         print(f"post_url: {post_url}")
         if not post_url:
             try:
+                print(response.content)
                 root = ET.fromstring(response.content)
                 post_url = root.find(".//{http://www.w3.org/2005/Atom}link[@rel='alternate']").attrib["href"]
                 print(f"    -> {post_url}")
