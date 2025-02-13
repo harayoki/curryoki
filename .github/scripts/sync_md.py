@@ -12,6 +12,8 @@ HATENA_BLOG_ID = "curryoki.hatenablog.jp"
 HATENA_API_KEY = os.getenv("HATENA_API_KEY")
 GITHUB_PAGES_URL = os.getenv("GITHUB_PAGES_URL")
 
+print(f"len HATENA_API_KEY : {len(HATENA_API_KEY)}")
+
 HATENA_BLOG_URL = f"https://blog.hatena.ne.jp/{HATENA_ID}/{HATENA_BLOG_ID}/atom/entry"
 
 print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
@@ -60,7 +62,7 @@ for md_file in md_files:
 
     headers = {"Content-Type": "application/xml"}
     url = post_url if post_url else HATENA_BLOG_URL
-    
+
     response = requests.request(
         method,
         url,
