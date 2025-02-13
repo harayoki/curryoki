@@ -106,6 +106,9 @@ for md_file in md_files:
                 post_url = "unknown"
                 print(f"    -> {post_url}")
 
+        with open(PUBLISHED_FILE, "w") as f:
+            json.dump(published, f, indent=2)
+
         published[md_file] = post_url
 
     else:
