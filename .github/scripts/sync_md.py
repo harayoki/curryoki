@@ -51,8 +51,7 @@ md_files = glob.glob("articles/**/*.md", recursive=True)
 
 # metadata/published.json ファイルの更新時刻を得る
 meta_data_update_time = os.path.getmtime(PUBLISHED_FILE)
-print(f"meta_data_update_time:
-       {datetime.fromtimestamp(meta_data_update_time)} {type(datetime.fromtimestamp(meta_data_update_time))}")
+print(f"meta_data_update_time: {datetime.fromtimestamp(meta_data_update_time)} {type(datetime.fromtimestamp(meta_data_update_time))}")
 
 # **新規 or 更新の処理**
 for md_file in md_files:
