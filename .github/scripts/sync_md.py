@@ -50,8 +50,8 @@ md_files = glob.glob("articles/**/*.md", recursive=True)
 
 
 # metadata/published.json ファイルの更新時刻を得る
-meta_data_update_time = os.path.getmtime(PUBLISHED_FILE)
-print(f"meta_data_update_time: {datetime.fromtimestamp(meta_data_update_time)} {type(datetime.fromtimestamp(meta_data_update_time))}")
+meta_data_update_time = atetime.fromtimestamp(os.path.getmtime(PUBLISHED_FILE))
+print(f"meta_data_update_time: {meta_data_update_time} {type(meta_data_update_time)}")
 
 # **新規 or 更新の処理**
 for md_file in md_files:
@@ -65,7 +65,8 @@ for md_file in md_files:
         last_update_time = None
     print(f"last_update_time: {last_update_time} {type(last_update_time)}")
     if last_update_time is None:
-        print(f"New {md_file}")
+        # print(f"New {md_file}")
+        pass
     # 記事の更新時刻が metadata/published.json より古い場合は無視する
     elif meta_data_update_time >  last_update_time:
         print(f"Skip {md_file}: {last_update_time} < {meta_data_update_time}")
