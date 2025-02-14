@@ -111,7 +111,7 @@ for md_file in md_files:
     }
 
     url = post_url if post_url else HATENA_BLOG_URL
-    last_update_time:  = now_iso if post_url else last_update_time
+    last_update_time = now_iso if post_url else last_update_time
     response = requests.request(
         method,
         url,
