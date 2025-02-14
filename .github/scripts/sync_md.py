@@ -49,6 +49,8 @@ def convert_media_paths(content):
 
 # 記事の一覧を取得
 md_files = glob.glob("articles/**/*.md", recursive=True)
+# 更新が古いほうを先頭に並び替える
+md_files.sort(key=lambda f: os.path.getmtime(f))
 
 
 # metadata/published.json ファイルの更新時刻を得る
