@@ -50,7 +50,7 @@ def get_commit_time(file) -> datetime:
     commit_info = os.popen(f"git log -1 --pretty=format:%ci -- {file}").read().split(",")
     # git log -1 --pretty=format:"%ci" -- <ファイル名>
     # print(f"commit_info: {commit_info}")
-    commit_time = datetime.fromtimestamp(int(commit_info[0]))
+    commit_time = datetime.fromisoformat(commit_info[0])
     if commit_time.tzinfo is None:
         commit_time = commit_time.replace(tzinfo=TIME_ZONE)
     return commit_time
