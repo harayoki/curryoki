@@ -91,7 +91,7 @@ for md_file in md_files:
     if meta_data_commit_time >=  commit_time:
         print(f"Skip {md_file}: {commit_time} <= meta:{meta_data_commit_time}")
         continue
-    # print(f"no skip {md_file}: {commit_time} > meta:{meta_data_commit_time}")
+    print(f"no skip {md_file}: {commit_time} > meta:{meta_data_commit_time}")
 
     # 記事の内容を読み込む
     with open(md_file, "r", encoding="utf-8") as f:
@@ -128,6 +128,7 @@ for md_file in md_files:
     SubElement(entry, "category", term=category)
     if not post_url:
         # 最初の投稿時のみ送ってる
+        # updatedを送るだけでもBlog内の表示順が変わってしまう
         SubElement(entry, "published").text = last_post_time.isoformat()
         SubElement(entry, "updated").text = now.isoformat()
 
