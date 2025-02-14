@@ -61,8 +61,8 @@ md_files.sort(key=lambda f: get_commit_time(f))
 
 
 # metadata/published.json ファイルの更新時刻を得る
-meta_data_update_time = get_commit_time(PUBLISHED_FILE)
-print(f"meta_data_update_time: {meta_data_update_time} {type(meta_data_update_time)}")
+meta_data_commit_time = get_commit_time(PUBLISHED_FILE)
+print(f"meta_data_commit_time: {meta_data_commit_time} {type(meta_data_commit_time)}")
 
 # **新規 or 更新の処理**
 for md_file in md_files:
@@ -83,18 +83,13 @@ for md_file in md_files:
     commit_time = get_commit_time(md_file)
     if commit_time.tzinfo is None:
         commit_time = commit_time.replace(tzinfo=TIME_ZONE)
-    print(f"commit_time: {commit_time}")
 
 
-    actual_update_time = datetime.fromtimestamp(os.path.getmtime(md_file))
-    if actual_update_time.tzinfo is None:
-        actual_update_time = actual_update_time.replace(tzinfo=TIME_ZONE)
-
-    # 記事の更新時刻が metadata/published.json より古い場合は無視する
-    elif actual_update_time >  last_update_time:
-        print(f"Skip {md_file}: {last_update_time} < {actual_update_time}")
+    # 記事のコミット時刻が metadata　のコミット時刻より古い場合は無視する
+    if meta_data_commit_time >=  commit_time:
+        print(f"Skip {md_file}: {commit_time} <= meta:{meta_data_commit_time}")
         continue
-    print(f"no skip {md_file}: {last_update_time} < {actual_update_time}")
+    print(f"no skip {md_file}: {commit_time} > meta:{meta_data_commit_time}")
 
     continue
  
