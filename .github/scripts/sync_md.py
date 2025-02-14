@@ -127,9 +127,9 @@ for md_file in md_files:
     SubElement(entry, "content", {"type": "text/markdown"}).text = content_cleaned
     SubElement(entry, "category", term=category)
     if not post_url:
-        # 最初の投稿時のみ送ってみる
+        # 最初の投稿時のみ送ってる
         SubElement(entry, "published").text = last_post_time.isoformat()
-    SubElement(entry, "updated").text = now.isoformat()
+        SubElement(entry, "updated").text = now.isoformat()
 
     headers = {
         "Content-Type": "application/xml",
