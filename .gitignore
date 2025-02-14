@@ -6,7 +6,8 @@ __pycache__
 .github/workflows/*.log
 .github/cache/
 .github/tmp/
-tmp/
+tmp/*
+temp/*
 ~*
 
 * copy.*
