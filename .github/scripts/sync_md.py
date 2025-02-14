@@ -49,7 +49,7 @@ def convert_media_paths(content):
 def get_commit_time(file) -> datetime:
     commit_info = os.popen(f'git log -1 --pretty=format:%ci,%H "{file}"').read().split(",")
     # git log -1 --pretty=format:"%ci" -- <ファイル名>
-    print(f"{file} commit_info: {commit_info}")
+    # print(f"{file} commit_info: {commit_info}")
     commit_time = datetime.fromisoformat(commit_info[0])
     if commit_time.tzinfo is None:
         commit_time = commit_time.replace(tzinfo=TIME_ZONE)
@@ -91,10 +91,9 @@ for md_file in md_files:
     if meta_data_commit_time >=  commit_time:
         print(f"Skip {md_file}: {commit_time} <= meta:{meta_data_commit_time}")
         continue
-    print(f"no skip {md_file}: {commit_time} > meta:{meta_data_commit_time}")
+    # print(f"no skip {md_file}: {commit_time} > meta:{meta_data_commit_time}")
 
-    continue
- 
+    # 記事の内容を読み込む
     with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
 
