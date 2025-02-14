@@ -1,4 +1,10 @@
 {
-  "articles/diary/hello.md": ["https://blog.hatena.ne.jp/curryoki/curryoki.hatenablog.jp/atom/entry/6802418398328545528", ""],
-  "articles/diary/20250215.md": ["https://blog.hatena.ne.jp/curryoki/curryoki.hatenablog.jp/atom/entry/6802418398328827162", ""]
+  "articles/diary/hello.md": [
+    "https://blog.hatena.ne.jp/curryoki/curryoki.hatenablog.jp/atom/entry/6802418398328545528",
+    "2025-02-14T17:30:43.530818+00:00"
+  ],
+  "articles/diary/20250215.md": [
+    "https://blog.hatena.ne.jp/curryoki/curryoki.hatenablog.jp/atom/entry/6802418398328827162",
+    "2025-02-14T17:30:41.828660+00:00"
+  ]
 }
