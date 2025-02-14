@@ -77,7 +77,7 @@ for md_file in md_files:
     
     # コミットメタ情報を得る
     commit_info = os.popen(f"git log -1 --pretty=format:%H,%at {md_file}").read().split(",")
-    print(f"commit_info: {commit_info}}")
+    print(f"commit_info: {commit_info}")
     commit_time = datetime.fromtimestamp(int(commit_info[1]))
     print(f"commit_time: {commit_time} {type(commit_time)}")
 
