@@ -48,14 +48,26 @@ def convert_media_paths(content):
 # 記事の一覧を取得
 md_files = glob.glob("articles/**/*.md", recursive=True)
 
+
+# metadata/published.json ファイルの更新時刻を得る
+meta_data_update_time = os.path.getmtime(PUBLISHED_FILE)
+print(f"meta_data_update_time:
+       {datetime.fromtimestamp(meta_data_update_time)} {type(datetime.fromtimestamp(meta_data_update_time))}")
+
 # **新規 or 更新の処理**
 for md_file in md_files:
     category = md_file.split("/")[1]  
 
-    # metadata/published.json ファイルの更新時刻を得る
-    meta_data_update_time = os.path.getmtime(PUBLISHED_FILE)
     # 記事の更新時刻を得る
-    post_url, last_update_time = published.get(md_file, [None, None])
+    post_url, last_update_timestamp_str = published.get(md_file, [None, ""])
+    if last_update_timestamp_str == "":
+        last_update_timestamp_str = "1739551907.3458312"
+    last_update_timestamp = float(last_update_timestamp_str)
+    print(f"last_update_timestamp: {last_update_timestamp}")
+    # 記事の更新時刻が metadata/published.json より古い場合は無視する
+    if post_url and last_update_time and meta_data_update_time >  last_update_timestamp:
+        print(f"Skip {md_file}: {last_update_time} < {datetime.fromtimestamp(meta_data_update_time)}")
+        continue
  
     with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
@@ -82,8 +94,10 @@ for md_file in md_files:
     method = "PUT" if post_url else "POST"
 
     now_iso = datetime.now(timezone.utc).isoformat()
+    print(f"now_iso: {now_iso} {type(now_iso)}")
 
     _, published_time = published.get(md_file, [None, now_iso])
+    print(f"published_time: {published_time} {type(published_time)}")
 
     entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
     SubElement(entry, "title").text = title
@@ -98,7 +112,7 @@ for md_file in md_files:
     }
 
     url = post_url if post_url else HATENA_BLOG_URL
-    last_update_time = now_iso if post_url else last_update_time
+    last_update_time:  = now_iso if post_url else last_update_time
     response = requests.request(
         method,
         url,
@@ -122,7 +136,7 @@ for md_file in md_files:
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
             print(f"post_url: {post_url}")
-            published[md_file] = [post_url, last_update_time]
+            published[md_file] = [post_url, str(last_update_time)]
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")
