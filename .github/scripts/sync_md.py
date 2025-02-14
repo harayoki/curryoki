@@ -82,6 +82,7 @@ for md_file in md_files:
     elif actual_update_time >  last_update_time:
         print(f"Skip {md_file}: {last_update_time} < {actual_update_time}")
         continue
+    print(f"no skip {md_file}: {last_update_time} < {actual_update_time}")
  
     with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
@@ -147,7 +148,7 @@ for md_file in md_files:
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
             now = datetime.now(TIME_ZONE)
-            print(f"post_url: {post_url} {now}")
+            print(f"post_url: {post_url}")
             published[md_file] = [post_url, now.isoformat()]
 
     else:
