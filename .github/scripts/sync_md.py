@@ -25,6 +25,7 @@ print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
 
 PUBLISHED_FILE = "metadata/published.json"
 MISSING_FILE = "metadata/missing.json"
+TIME_ZONE = timezone.jst
 
 published: Dict[str, List[str]]
 try:
@@ -52,7 +53,7 @@ md_files = glob.glob("articles/**/*.md", recursive=True)
 # metadata/published.json ファイルの更新時刻を得る
 meta_data_update_time = datetime.fromtimestamp(os.path.getmtime(PUBLISHED_FILE))
 if meta_data_update_time.tzinfo is None:
-    meta_data_update_time = meta_data_update_time.replace(tzinfo=timezone.utc)
+    meta_data_update_time = meta_data_update_time.replace(tzinfo=TIME_ZONE)
 # print(f"meta_data_update_time: {meta_data_update_time} {type(meta_data_update_time)}")
 
 # **新規 or 更新の処理**
@@ -103,7 +104,7 @@ for md_file in md_files:
 
     method = "PUT" if post_url else "POST"
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(TIME_ZONE)
     print(f"now_iso: {now} {type(now)}")
     last_update_time = last_update_time if last_update_time else now
 
@@ -142,7 +143,7 @@ for md_file in md_files:
                 print(f"⚠️ {md_file}: 投稿URLを取得できませんでした。")
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
-            print(f"post_url: {post_url}")
+            print(f"post_url: {post_url} {last_update_time}")
             published[md_file] = [post_url, last_update_time.isoformat()]
 
     else:
