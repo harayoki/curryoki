@@ -64,7 +64,7 @@ md_files.sort(key=lambda f: get_commit_time(f))
 
 # metadata/published.json ファイルの更新時刻を得る
 meta_data_commit_time = get_commit_time(PUBLISHED_FILE)
-print(f"meta_data_commit_time: {meta_data_commit_time} {type(meta_data_commit_time)}")
+print(f"meta_data_commit_time: {meta_data_commit_time}")
 
 # **新規 or 更新の処理**
 for md_file in md_files:
@@ -76,7 +76,7 @@ for md_file in md_files:
         last_post_time = datetime.fromisoformat(last_post_time_str)
     else:
         last_post_time = None
-    print(f"last_post_time: {last_post_time} {type(last_post_time)}")
+    # print(f"last_post_time: {last_post_time}")
     if last_post_time is None:
         # print(f"New {md_file}")
         pass
