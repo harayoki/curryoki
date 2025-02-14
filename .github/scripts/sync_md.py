@@ -144,8 +144,9 @@ for md_file in md_files:
                 print(f"⚠️ {md_file}: 投稿URLを取得できませんでした。")
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
-            print(f"post_url: {post_url} {last_update_time}")
-            published[md_file] = [post_url, last_update_time.isoformat()]
+            now = datetime.now(TIME_ZONE)
+            print(f"post_url: {post_url} {now}")
+            published[md_file] = [post_url, now.isoformat()]
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")
