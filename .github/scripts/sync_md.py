@@ -51,6 +51,8 @@ md_files = glob.glob("articles/**/*.md", recursive=True)
 
 # metadata/published.json ファイルの更新時刻を得る
 meta_data_update_time = datetime.fromtimestamp(os.path.getmtime(PUBLISHED_FILE))
+if timezone.is_naive(meta_data_update_time):
+    meta_data_update_time = timezone.make_aware(meta_data_update_time)
 print(f"meta_data_update_time: {meta_data_update_time} {type(meta_data_update_time)}")
 
 # **新規 or 更新の処理**
