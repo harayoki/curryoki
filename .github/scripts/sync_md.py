@@ -46,19 +46,23 @@ def convert_media_paths(content):
         content
     )
 
+def get_commit_time(file) -> datetime:
+    commit_info = os.popen(f"git log -1 --pretty=format:%H,%at {file}").read().split(",")
+    commit_time = datetime.fromtimestamp(int(commit_info[1]))
+    if commit_time.tzinfo is None:
+        commit_time = commit_time.replace(tzinfo=TIME_ZONE)
+    return commit_time
+
 
 # 記事の一覧を取得
 md_files = glob.glob("articles/**/*.md", recursive=True)
 # 更新が古いほうを先頭に並び替える
-md_files.sort(key=lambda f: os.path.getmtime(f))
-md_files.reverse()
+md_files.sort(key=lambda f: get_commit_time(f))
 
 
 # metadata/published.json ファイルの更新時刻を得る
-meta_data_update_time = datetime.fromtimestamp(os.path.getmtime(PUBLISHED_FILE))
-if meta_data_update_time.tzinfo is None:
-    meta_data_update_time = meta_data_update_time.replace(tzinfo=TIME_ZONE)
-# print(f"meta_data_update_time: {meta_data_update_time} {type(meta_data_update_time)}")
+meta_data_update_time = get_commit_time(PUBLISHED_FILE)
+print(f"meta_data_update_time: {meta_data_update_time} {type(meta_data_update_time)}")
 
 # **新規 or 更新の処理**
 for md_file in md_files:
@@ -76,11 +80,11 @@ for md_file in md_files:
         pass
     
     # コミットメタ情報を得る
-    commit_info = os.popen(f"git log -1 --pretty=format:%H,%at {md_file}").read().split(",")
-    commit_time = datetime.fromtimestamp(int(commit_info[1]))
+    commit_time = get_commit_time(md_file)
     if commit_time.tzinfo is None:
-        commit_time = meta_data_updacommit_timete_time.replace(tzinfo=TIME_ZONE)
+        commit_time = commit_time.replace(tzinfo=TIME_ZONE)
     print(f"commit_time: {commit_time}")
+
 
     actual_update_time = datetime.fromtimestamp(os.path.getmtime(md_file))
     if actual_update_time.tzinfo is None:
