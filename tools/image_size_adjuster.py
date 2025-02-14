@@ -4,8 +4,12 @@ from pathlib import Path
 import argparse
 
 
-def adjust_image_size(image_path: str, width: int, height: int) -> Image.Image:
-    image = Image.open(image_path)
+def adjust_image_size(image_path: str, width: int, height: int) -> Image.Image | None:
+    try:
+        image = Image.open(image_path)
+    except Exception as e:
+        print(f"Failed to open the image: {image_path}")
+        return None
     assert width >= 0 or height >= 0
     if width < 0:
         width = image.width * height // image.height
@@ -63,6 +67,8 @@ def main() -> None:
     ouutput_parh: Path
     for image_path in image_paths:
         image = adjust_image_size(image_path, args.width, args.height)
+        if image is None:
+            continue
         output_path = output_dir / image_path.name
         if output_path.exists() and not args.allow_overwrite:
             # add index to the file name
