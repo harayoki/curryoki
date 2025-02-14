@@ -126,7 +126,9 @@ for md_file in md_files:
     SubElement(entry, "title").text = title
     SubElement(entry, "content", {"type": "text/markdown"}).text = content_cleaned
     SubElement(entry, "category", term=category)
-    SubElement(entry, "published").text = last_post_time.isoformat()
+    if not post_url:
+        # 最初の投稿時のみ送ってみる
+        SubElement(entry, "published").text = last_post_time.isoformat()
     SubElement(entry, "updated").text = now.isoformat()
 
     headers = {
