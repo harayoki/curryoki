@@ -26,7 +26,7 @@ print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
 PUBLISHED_FILE = "metadata/published.json"
 MISSING_FILE = "metadata/missing.json"
 
-published: Dict[str, List[str, str]]
+published: Dict[str, List[str]]
 try:
     with open(PUBLISHED_FILE, "r") as f:
         published = json.load(f)
