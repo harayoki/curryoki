@@ -58,14 +58,17 @@ for md_file in md_files:
     category = md_file.split("/")[1]  
 
     # 記事の更新時刻を得る
-    post_url, last_update_timestamp_str = published.get(md_file, [None, ""])
-    if last_update_timestamp_str == "":
-        last_update_timestamp_str = "1739551907.3458312"
-    last_update_timestamp = float(last_update_timestamp_str)
-    print(f"last_update_timestamp: {last_update_timestamp}")
+    post_url, last_update_time_str = published.get(md_file, [None, ""])
+    if last_update_time_str != "":
+        last_update_time = datetime.fromisoformat(last_update_time_str)
+    else:
+        last_update_time = None
+    print(f"last_update_time: {last_update_time} {type(last_update_time)}")
+    if last_update_time is None:
+        print(f"New {md_file}")
     # 記事の更新時刻が metadata/published.json より古い場合は無視する
-    if post_url and last_update_time and meta_data_update_time >  last_update_timestamp:
-        print(f"Skip {md_file}: {last_update_time} < {datetime.fromtimestamp(meta_data_update_time)}")
+    elif meta_data_update_time >  last_update_time:
+        print(f"Skip {md_file}: {last_update_time} < {meta_data_update_time}")
         continue
  
     with open(md_file, "r", encoding="utf-8") as f:
@@ -92,18 +95,16 @@ for md_file in md_files:
 
     method = "PUT" if post_url else "POST"
 
-    now_iso = datetime.now(timezone.utc).isoformat()
-    print(f"now_iso: {now_iso} {type(now_iso)}")
-
-    _, published_time = published.get(md_file, [None, now_iso])
-    print(f"published_time: {published_time} {type(published_time)}")
+    now = datetime.now(timezone.utc)
+    print(f"now_iso: {now} {type(now)}")
+    last_update_time = last_update_time if last_update_time else now
 
     entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
     SubElement(entry, "title").text = title
     SubElement(entry, "content", {"type": "text/markdown"}).text = content_cleaned
     SubElement(entry, "category", term=category)
-    SubElement(entry, "published").text = published_time
-    SubElement(entry, "updated").text = now_iso
+    SubElement(entry, "published").text = last_update_time.isoformat()
+    SubElement(entry, "updated").text = now.isoformat()
 
     headers = {
         "Content-Type": "application/xml",
@@ -111,7 +112,6 @@ for md_file in md_files:
     }
 
     url = post_url if post_url else HATENA_BLOG_URL
-    last_update_time = now_iso if post_url else last_update_time
     response = requests.request(
         method,
         url,
@@ -135,7 +135,7 @@ for md_file in md_files:
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
             print(f"post_url: {post_url}")
-            published[md_file] = [post_url, str(last_update_time)]
+            published[md_file] = [post_url, last_update_time.isoformat()]
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")
