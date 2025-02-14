@@ -1,4 +1,7 @@
 draft
+venv
+*.pyc
+__pycache__
 .github/secrets/
 .github/workflows/*.log
 .github/cache/
