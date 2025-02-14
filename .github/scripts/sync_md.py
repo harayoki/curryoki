@@ -5,6 +5,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import re
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from xml.etree.ElementTree import Element, SubElement, tostring
 import xml.etree.ElementTree as ET
 from typing import List, Dict
@@ -25,7 +26,7 @@ print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
 
 PUBLISHED_FILE = "metadata/published.json"
 MISSING_FILE = "metadata/missing.json"
-TIME_ZONE = timezone.jst
+TIME_ZONE = ZoneInfo("Asia/Tokyo")
 
 published: Dict[str, List[str]]
 try:
