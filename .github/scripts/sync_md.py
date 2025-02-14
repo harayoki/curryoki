@@ -49,6 +49,16 @@ md_files = glob.glob("articles/**/*.md", recursive=True)
 # **新規 or 更新の処理**
 for md_file in md_files:
     category = md_file.split("/")[1]  
+
+    # metadata/published.json ファイルの更新時刻を得る
+    meta_data_update_time = os.path.getmtime(PUBLISHED_FILE)
+    # 記事の更新時刻を得る
+    article_update_time = os.path.getmtime(md_file)
+    # 記事の更新がない場合はスキップ
+    if md_file in published and meta_data_update_time > article_update_time:
+        print(f"Skip {md_file}: No update")
+        continue
+
     with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
 
