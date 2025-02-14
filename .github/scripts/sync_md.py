@@ -7,6 +7,7 @@ import re
 from datetime import datetime, timezone
 from xml.etree.ElementTree import Element, SubElement, tostring
 import xml.etree.ElementTree as ET
+from typing import List, Dict
 
 
 HATENA_ID = os.getenv("HATENA_ID")  
@@ -25,6 +26,7 @@ print(f"HATENA_BLOG_URL: {HATENA_BLOG_URL}")
 PUBLISHED_FILE = "metadata/published.json"
 MISSING_FILE = "metadata/missing.json"
 
+published: Dict[str, List[str, str]]
 try:
     with open(PUBLISHED_FILE, "r") as f:
         published = json.load(f)
@@ -53,12 +55,8 @@ for md_file in md_files:
     # metadata/published.json ファイルの更新時刻を得る
     meta_data_update_time = os.path.getmtime(PUBLISHED_FILE)
     # 記事の更新時刻を得る
-    article_update_time = os.path.getmtime(md_file)
-    # 記事の更新がない場合はスキップ
-    if md_file in published and meta_data_update_time > article_update_time:
-        print(f"Skip {md_file}: No update {article_update_time} < {meta_data_update_time}")
-        continue
-
+    post_url, last_update_time = published.get(md_file, [None, None])
+ 
     with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
 
@@ -81,12 +79,11 @@ for md_file in md_files:
     content_cleaned = "\n".join(filtered_lines)
 
 
-    post_url = published.get(md_file, None)
     method = "PUT" if post_url else "POST"
 
     now_iso = datetime.now(timezone.utc).isoformat()
 
-    published_time = published.get(md_file, now_iso)
+    _, published_time = published.get(md_file, [None, now_iso])
 
     entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
     SubElement(entry, "title").text = title
@@ -101,6 +98,7 @@ for md_file in md_files:
     }
 
     url = post_url if post_url else HATENA_BLOG_URL
+    last_update_time = now_iso if post_url else last_update_time
     response = requests.request(
         method,
         url,
@@ -124,7 +122,7 @@ for md_file in md_files:
                 continue  # `published.json` を更新せずスキップ 
         if post_url:
             print(f"post_url: {post_url}")
-            published[md_file] = post_url
+            published[md_file] = [post_url, last_update_time]
 
     else:
         print(f"Failed to publish {md_file}: {response.text}")
