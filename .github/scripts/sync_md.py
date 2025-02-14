@@ -50,7 +50,8 @@ def convert_media_paths(content):
 # 記事の一覧を取得
 md_files = glob.glob("articles/**/*.md", recursive=True)
 # 更新が古いほうを先頭に並び替える
-md_files.sort(key=lambda f: os.path.getmtime(f)).reverse()
+md_files.sort(key=lambda f: os.path.getmtime(f))
+md_files.reverse()
 
 
 # metadata/published.json ファイルの更新時刻を得る
@@ -73,10 +74,15 @@ for md_file in md_files:
     if last_update_time is None:
         # print(f"New {md_file}")
         pass
+    
+    # コミットメタ情報を得る
+    commit_info = os.popen(f"git log -1 --pretty=format:%H,%at {md_file}").read().split(",")
+    commit_time = datetime.fromtimestamp(int(commit_info[1]))
+    print(f"commit_time: {commit_time} {type(commit_time)}")
 
     actual_update_time = datetime.fromtimestamp(os.path.getmtime(md_file))
     if actual_update_time.tzinfo is None:
-        actual_update_time = actual_update_time.replace(tzinfo=timezone.utc)
+        actual_update_time = actual_update_time.replace(tzinfo=TIME_ZONE)
 
     # 記事の更新時刻が metadata/published.json より古い場合は無視する
     elif actual_update_time >  last_update_time:
