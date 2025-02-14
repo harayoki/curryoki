@@ -47,7 +47,7 @@ def convert_media_paths(content):
     )
 
 def get_commit_time(file) -> datetime:
-    commit_info = os.popen(f'git log -1 --pretty=format:"%ci,%H" -- {file}').read().split(",")
+    commit_info = os.popen(f'git log -1 --pretty=format:"%ci,%H" -- "{file}"').read().split(",")
     # git log -1 --pretty=format:"%ci" -- <ファイル名>
     print(f"{file} commit_info: {commit_info}")
     commit_time = datetime.fromisoformat(commit_info[0])
