@@ -56,7 +56,7 @@ for md_file in md_files:
     article_update_time = os.path.getmtime(md_file)
     # 記事の更新がない場合はスキップ
     if md_file in published and meta_data_update_time > article_update_time:
-        print(f"Skip {md_file}: No update")
+        print(f"Skip {md_file}: No update {article_update_time} < {meta_data_update_time}")
         continue
 
     with open(md_file, "r", encoding="utf-8") as f:
