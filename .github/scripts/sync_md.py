@@ -68,14 +68,14 @@ print(f"meta_data_commit_time: {meta_data_commit_time} {type(meta_data_commit_ti
 for md_file in md_files:
     category = md_file.split("/")[1]  
 
-    # 記事の更新時刻を得る
-    post_url, last_update_time_str = published.get(md_file, [None, ""])
-    if last_update_time_str != "":
-        last_update_time = datetime.fromisoformat(last_update_time_str)
+    # 記事のポスト時刻を得る
+    post_url, last_post_time_str = published.get(md_file, [None, ""])
+    if last_post_time_str != "":
+        last_post_time = datetime.fromisoformat(last_post_time_str)
     else:
-        last_update_time = None
-    print(f"last_update_time: {last_update_time} {type(last_update_time)}")
-    if last_update_time is None:
+        last_post_time = None
+    print(f"last_post_time: {last_post_time} {type(last_post_time)}")
+    if last_post_time is None:
         # print(f"New {md_file}")
         pass
     
@@ -118,14 +118,14 @@ for md_file in md_files:
     method = "PUT" if post_url else "POST"
 
     now = datetime.now(TIME_ZONE)
-    print(f"now_iso: {now} {type(now)}")
-    last_update_time = last_update_time if last_update_time else now
+    # print(f"now_iso: {now} {type(now)}")
+    last_post_time = last_post_time if last_post_time else now
 
     entry = Element("entry", xmlns="http://www.w3.org/2005/Atom")
     SubElement(entry, "title").text = title
     SubElement(entry, "content", {"type": "text/markdown"}).text = content_cleaned
     SubElement(entry, "category", term=category)
-    SubElement(entry, "published").text = last_update_time.isoformat()
+    SubElement(entry, "published").text = last_post_time.isoformat()
     SubElement(entry, "updated").text = now.isoformat()
 
     headers = {
@@ -154,10 +154,10 @@ for md_file in md_files:
                 post_url = root.find(".//{http://www.w3.org/2005/Atom}link[@rel='edit']").attrib["href"]
             except Exception:
                 print(f"⚠️ {md_file}: 投稿URLを取得できませんでした。")
-                continue  # `published.json` を更新せずスキップ 
+                continue  # published.json を更新せずスキップ 
         if post_url:
             now = datetime.now(TIME_ZONE)
-            print(f"post_url: {post_url}")
+            # print(f"post_url: {post_url}")
             published[md_file] = [post_url, now.isoformat()]
 
     else:
