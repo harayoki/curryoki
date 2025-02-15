@@ -1,7 +1,53 @@
-from PIL import Image
+from PIL import Image, ImageDraw
 from typing import Tuple, List
 from pathlib import Path
 import argparse
+
+
+
+def add_stripe_margin(img, margin_size, color1, color2, stripe_width=10):
+    """
+    指定された2色の斜めストライプマージンを追加する。
+    :param img: PIL Image オブジェクト
+    :param margin_size: 余白のサイズ（px）
+    :param color1: ストライプの色1
+    :param color2: ストライプの色2
+    :param stripe_width: ストライプの幅
+    :return: マージン付きのPIL Image オブジェクト
+    """
+    new_size = (img.width + 2 * margin_size, img.height + 2 * margin_size)
+    outer_img = Image.new("RGB", new_size, color2)
+    draw = ImageDraw.Draw(outer_img)
+    
+    # 斜めストライプを全面に描画
+    for i in range(-new_size[0] - new_size[1], new_size[0] + new_size[1], stripe_width * 2):
+        draw.polygon([
+            (i, 0), 
+            (i + stripe_width, 0), 
+            (i + stripe_width + new_size[1], new_size[1]), 
+            (i + new_size[1], new_size[1])
+        ], fill=color1)
+    
+    # 画像を中央に貼り付け
+    outer_img.paste(img, (margin_size, margin_size))
+    
+    return outer_img
+
+
+def add_single_color_margin(img, margin_size, color):
+    """
+    指定された単色のマージンを追加する。
+    :param img: PIL Image オブジェクト
+    :param margin_size: 余白のサイズ（px）
+    :param color: マージンの色
+    :return: マージン付きのPIL Image オブジェクト
+    """
+    new_size = (img.width + 2 * margin_size, img.height + 2 * margin_size)
+    new_img = Image.new("RGB", new_size, color)
+    new_img.paste(img, (margin_size, margin_size))
+    
+    return new_img
+
 
 
 def adjust_image_size(image_path: str, width: int, height: int) -> Image.Image | None:
@@ -38,8 +84,14 @@ def main() -> None:
     parser.add_argument("image_path", type=str, help="Path to the image file or directory")
     parser.add_argument("-ww", "--width", type=int, default=-1, help="Width of the image")
     parser.add_argument("-hh", "--height", type=int, default=-1, help="Height of the image")
+    parser.add_argument("-stripe", "--stripe_margin", type=int, default=20,
+                        help="Width of the stripe margin, total width and height will be 2 * stripe_margin + original size")
+    parser.add_argument("-margin", "--margin_width", type=int, default=60,
+                        help="Width of the margin, total width and height will be 2 * margin_width + original size")
+    parser.add_argument("-mc", "--margin_color", type=str, default="FFFFFF", help="Color of the margin")
     parser.add_argument("--output", type=str, default="", help="Output directory")
     parser.add_argument("--allow_overwrite", action="store_true", help="Allow overwriting the existing files")
+
     args = parser.parse_args()
     if args.width < 0 and args.height < 0:
         raise ValueError("Either width or height must be specified")
@@ -64,11 +116,19 @@ def main() -> None:
 
     width = args.width
     height = args.height
+    stripe_margin = args.stripe_margin
+    margin_width = args.margin_width
+    margin_color_rgb = tuple(int(args.margin_color[i:i + 2], 16) for i in (0, 2, 4))
     ouutput_parh: Path
     for image_path in image_paths:
         image = adjust_image_size(image_path, args.width, args.height)
         if image is None:
             continue
+        if stripe_margin > 0:
+            image = add_stripe_margin(image, stripe_margin, (0, 0, 0), (255, 255, 255))
+        if margin_width > 0:
+            image = add_single_color_margin(image, margin_width, margin_color_rgb)
+
         output_path = output_dir / image_path.name
         if output_path.exists() and not args.allow_overwrite:
             # add index to the file name
