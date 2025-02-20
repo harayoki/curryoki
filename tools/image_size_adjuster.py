@@ -91,9 +91,9 @@ def main() -> None:
                         help="Width of the stripe margin, total width and height will be 2 * stripe_margin + original size")
     parser.add_argument("-margin", "--margin_width", type=int, default=60,
                         help="Width of the margin, total width and height will be 2 * margin_width + original size")
-    parser.add_argument("--top_mergin_width", type=int, default=-1,
+    parser.add_argument("-tmw", "--top_mergin_width", type=int, default=-1,
                          help="Width of the top margin if different from the margin width")
-    parser.add_argument("--bottom_mergin_width", type=int, default=-1,
+    parser.add_argument("-bmw", "--bottom_mergin_width", type=int, default=-1,
                          help="Width of the bottom margin if different from the margin width")
     parser.add_argument("-mc", "--margin_color", type=str, default="FFFFFF", help="Color of the margin")
     parser.add_argument("--output", type=str, default="", help="Output directory")
@@ -109,6 +109,11 @@ def main() -> None:
         image_paths = list(input_path.glob("*"))
     else:
         image_paths = [input_path]
+    image_paths = [path for path in image_paths if path.is_file() and not path.name.startswith(".")]
+    image_paths = [path for path in image_paths if path.suffix.lower() in [".jpg", ".jpeg", ".png", ".gif"]]
+    if len(image_paths) == 0:
+        print("No image files found")
+        return
 
     if args.output == "":
         output_dir = input_path
@@ -155,7 +160,7 @@ def main() -> None:
                     break
                 index += 1
         image.save(output_path)        
-        print(f"Resized: {image_path}")
+        print(f"Resized: {image_path} -> {output_path} ({image.width}x{image.height})")
 
 
 if __name__ == '__main__':

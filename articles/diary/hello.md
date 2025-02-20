@@ -31,6 +31,6 @@
 このルールで健康なの？と、クエスチョンがるある人もいるかと思いますが、とにかくこれで行くのです。
 
 
-![kitchen](/images/kitchen.jpg)
+![kitchen](/images/misc/kitchen.jpg)
 Image by (DALL-E / CHAT GPT)
 
