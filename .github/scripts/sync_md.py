@@ -17,7 +17,7 @@ HATENA_API_KEY = os.getenv("HATENA_API_KEY")
 MEDIA_BASE_URL = os.getenv("MEDIA_BASE_URL")
 assert HATENA_ID, "Please set HATENA_ID environment variables"
 assert HATENA_API_KEY, "Please set HATENA_API_KEY environment variables"
-assert MEDIA_BASE_URL, "Please set IMAGE_BASE_URL environment variables"
+assert MEDIA_BASE_URL, "Please set MEDIA_BASE_URL environment variables"
 
 HATENA_BLOG_URL = f"https://blog.hatena.ne.jp/{HATENA_ID}/{HATENA_BLOG_ID}/atom/entry"
 
@@ -37,6 +37,21 @@ except FileNotFoundError:
 
 
 
+# def convert_media_paths(content):
+#     # img タグの相対パスを GitHub BLOB URL に変換
+#     content = re.sub(
+#         r"<img src=\"(?!https?:\/\/)([^>\s]+?\.(jpg|jpeg|png|gif|webp|svg))\"",
+#         lambda m: f"<img src=\"{MEDIA_BASE_URL}/{m.group(1)}\"",
+#         content
+#     )
+#     """Markdown の相対パスのメディア（画像・動画・ファイル）を GitHub BLOB URL に変換"""
+#     content = re.sub(
+#         r"!\[(.*?)\]\((?!https?:\/\/)([^)\s]+?\.(jpg|jpeg|png|gif|webp|svg|zip|mp4|mp3|blend|psd|ai)(\?.*?)?)\)",
+#         lambda m: f"![{m.group(1)}]({MEDIA_BASE_URL}/{m.group(2)})",
+#         content
+#     )
+#     return content
+
 def convert_media_paths(content):
     # img タグの相対パスを GitHub BLOB URL に変換
     content = re.sub(
@@ -45,11 +60,16 @@ def convert_media_paths(content):
         content
     )
     """Markdown の相対パスのメディア（画像・動画・ファイル）を GitHub BLOB URL に変換"""
-    return re.sub(
-        r"!\[(.*?)\]\((?!https?:\/\/)([^)\s]+?\.(jpg|jpeg|png|gif|webp|svg|zip|mp4|mp3|blend|psd|ai)(\?.*?)?)\)",
-        lambda m: f"![{m.group(1)}]({MEDIA_BASE_URL}/{m.group(2)})",
+    content = re.sub(
+        r"\((?!https?:\/\/)([^)\s]+?\.(jpg|jpeg|png|gif|webp|svg|zip|mp4|mp3|blend|psd|ai)(\?.*?)?)\)",
+        lambda m: f"({MEDIA_BASE_URL}/{m.group(1)})",
         content
     )
+    # (http https ...):// 以外の 二重スラッシュを除去
+    content = content.replace("://", "___COLONSLASHSLASH___")
+    content = content.replace("//", "/")
+    content = content.replace("___COLONSLASHSLASH___", "://")
+    return content
 
 def get_commit_time(file) -> datetime:
     commit_info = os.popen(f'git log -1 --pretty=format:%ci,%H "{file}"').read().split(",")
