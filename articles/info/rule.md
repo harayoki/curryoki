@@ -16,7 +16,7 @@
     * 電子レンジ利用はOK。
     * ブレンダーなども積極的に使う。
 
-[![hootcook](/images/misc/hotcook.jpg)](/images/misc/hotcook.jpg)
+[![hootcook](/images/misc/hotcook.jpg)](/images_original/misc/hotcook.jpg)
 
 ※ スープメーカーを保有しているので使いたい。例外的に使うルールを模索中。
 
