@@ -16,7 +16,7 @@
     * 電子レンジ利用はOK
     * ブレンダーなども積極的に使う
 
-<img src="/images/hotcook.jpg" width ="800" heiht="684">
+<img src="/images/hotcook.jpg" width ="800" heiht="684" alt="hotcook">
 
 ※ スープメーカーを保有しているので使いたい、例外的に使うルールを模索中
 

@@ -38,8 +38,13 @@ except FileNotFoundError:
 
 
 def convert_media_paths(content):
+    # img タグの相対パスを GitHub BLOB URL に変換
+    content = re.sub(
+        r"<img src=\"(?!https?:\/\/)([^>\s]+?\.(jpg|jpeg|png|gif|webp|svg))\"",
+        lambda m: f"<img src=\"{MEDIA_BASE_URL}/{m.group(1)}\"",
+        content
+    )
     """Markdown の相対パスのメディア（画像・動画・ファイル）を GitHub BLOB URL に変換"""
-    # 正規表現の修正版
     return re.sub(
         r"!\[(.*?)\]\((?!https?:\/\/)([^)\s]+?\.(jpg|jpeg|png|gif|webp|svg|zip|mp4|mp3|blend|psd|ai)(\?.*?)?)\)",
         lambda m: f"![{m.group(1)}]({MEDIA_BASE_URL}/{m.group(2)})",
