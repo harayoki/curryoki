@@ -34,17 +34,20 @@ def add_stripe_margin(img, margin_size, color1, color2, stripe_width=10):
     return outer_img
 
 
-def add_single_color_margin(img, margin_size, color):
+def add_single_color_margin(img, margin_top, margin_right, margin_bottom, margin_left, color):
     """
     指定された単色のマージンを追加する。
     :param img: PIL Image オブジェクト
-    :param margin_size: 余白のサイズ（px）
+    :param margin_top: 上部の余白のサイズ（px）
+    :param margin_right: 右部の余白のサイズ（px）
+    :param margin_bottom: 下部の余白のサイズ（px）
+    :param margin_left: 左部の余白のサイズ（px）
     :param color: マージンの色
     :return: マージン付きのPIL Image オブジェクト
     """
-    new_size = (img.width + 2 * margin_size, img.height + 2 * margin_size)
+    new_size = (img.width + margin_left + margin_right, img.height + margin_top + margin_bottom)
     new_img = Image.new("RGB", new_size, color)
-    new_img.paste(img, (margin_size, margin_size))
+    new_img.paste(img, (margin_left, margin_top))
     
     return new_img
 
@@ -88,6 +91,10 @@ def main() -> None:
                         help="Width of the stripe margin, total width and height will be 2 * stripe_margin + original size")
     parser.add_argument("-margin", "--margin_width", type=int, default=60,
                         help="Width of the margin, total width and height will be 2 * margin_width + original size")
+    parser.add_argument("--top_mergin_width", type=int, default=-1,
+                         help="Width of the top margin if different from the margin width")
+    parser.add_argument("--bottom_mergin_width", type=int, default=-1,
+                         help="Width of the bottom margin if different from the margin width")
     parser.add_argument("-mc", "--margin_color", type=str, default="FFFFFF", help="Color of the margin")
     parser.add_argument("--output", type=str, default="", help="Output directory")
     parser.add_argument("--allow_overwrite", action="store_true", help="Allow overwriting the existing files")
@@ -127,7 +134,16 @@ def main() -> None:
         if stripe_margin > 0:
             image = add_stripe_margin(image, stripe_margin, (0, 0, 0), (255, 255, 255))
         if margin_width > 0:
-            image = add_single_color_margin(image, margin_width, margin_color_rgb)
+            margin_top = margin_width
+            margin_right = margin_width
+            margin_bottom = margin_width
+            margin_left = margin_width
+            if args.top_mergin_width >= 0:
+                margin_top = args.top_mergin_width
+            if args.bottom_mergin_width >= 0:
+                margin_bottom = args.bottom_mergin_width
+            image = add_single_color_margin(
+                image, margin_top, margin_right, margin_bottom, margin_left, margin_color_rgb)
 
         output_path = output_dir / image_path.name
         if output_path.exists() and not args.allow_overwrite:
