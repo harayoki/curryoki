@@ -52,6 +52,7 @@ def main():
             print(_templae1.format("/" + image.as_posix()))
             continue
         print(_templae2.format("/" + image.as_posix(), "/" + original_image.as_posix()))
+        print()
     
 
 if __name__ == "__main__":
